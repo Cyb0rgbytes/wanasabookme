@@ -59,6 +59,22 @@ Users host and join events with **cost-split pricing** that scales with attendan
 ### Money
 - All amounts are stored as **integer fils** (1 AED = 100 fils). Never floats for money.
 - Slice 1 has **no payments**. The pricing engine computes and displays prices; nothing charges.
+- **Cost-split model** (`src/lib/pricing.ts`, pure — imports nothing):
+  ```
+  settled     = clamp(totalCost / confirmedAttendees, floor, ceiling)
+  confirmable = confirmedAttendees >= minHeadcount
+  you pay     = min(priceWhenYouJoined, settled)
+  ```
+  The join-time price is a personal **cap**, not a fixed amount: nobody pays more
+  than they agreed to, and everyone benefits when later joins lower the price.
+- Division **rounds up** so the collected total always covers the organizer's cost.
+- Zero attendees yields the **ceiling**, not a division by zero — an empty event
+  page shows the worst case a visitor could pay.
+- Quotes use the **post-join** price (`attendees + 1`); quoting the pre-join price
+  would make the number drop the instant someone clicks, which reads as a
+  bait-and-switch.
+- Keep `pricing.ts` free of imports. It stays testable without mocks, and Slice 2's
+  Stripe code wraps it rather than changing it.
 
 ## Layout
 

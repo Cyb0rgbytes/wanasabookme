@@ -8,6 +8,13 @@
       "when": 1786477733237,
       "tag": "0000_init_users",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1786480749399,
+      "tag": "0001_events_and_attendees",
+      "breakpoints": true
     }
   ]
 }
