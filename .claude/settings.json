@@ -30,7 +30,11 @@
       "Bash(node \"C:/Users/Omar/AppData/Local/Temp/claude/m--AI-Projects-WanasaBookMe/8a96f033-6eac-4cd4-b045-047b03f27781/scratchpad/svix-probe.mjs\" http://localhost:3400/api/webhooks/clerk user.created user_probe_001)",
       "Bash(node -e ' *)",
       "Bash(curl -s --max-time 30 http://localhost:3400/api/_envprobe)",
-      "Bash(curl -s -o /dev/null -w \"GET /api/_envprobe -> %{http_code}, type=%{content_type}\\\\n\" --max-time 25 http://localhost:3400/api/_envprobe)"
+      "Bash(curl -s -o /dev/null -w \"GET /api/_envprobe -> %{http_code}, type=%{content_type}\\\\n\" --max-time 25 http://localhost:3400/api/_envprobe)",
+      "Bash(BASE_URL=http://localhost:3600 node scripts/test-join-race.mjs)",
+      "Bash(rm -f /tmp/probe_rejoin.mjs /tmp/stress.mjs)",
+      "PowerShell(Set-Location \"m:\\\\AI_Projects\\\\WanasaBookMe\"; Write-Output \"=== TESTS ===\"; npm test 2>&1 | Select-Object -Last 7; Write-Output \"=== LINT ===\"; npm run lint 2>&1 | Select-Object -Last 6; Write-Output \"exit=$LASTEXITCODE\")",
+      "Bash(git add *)"
     ]
   }
 }
