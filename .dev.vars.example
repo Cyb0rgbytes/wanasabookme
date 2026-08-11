@@ -1,0 +1,20 @@
+# Template for .dev.vars — copy to `.dev.vars` and fill in real values.
+# `.dev.vars` is gitignored. This example file is NOT — keep it free of real keys.
+#
+# .dev.vars supplies secrets to LOCAL dev only (`npm run dev` and `npm run preview`).
+# Production secrets are set separately with:
+#   npx wrangler secret put <NAME>
+
+# --- Clerk (https://dashboard.clerk.com) ---
+# Publishable key is safe to expose to the browser; secret key is not.
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="<your Clerk publishable key>"
+CLERK_SECRET_KEY="<your Clerk secret key>"
+
+# Set after creating the webhook endpoint in Clerk (Phase 3).
+# Leave blank until then.
+CLERK_WEBHOOK_SIGNING_SECRET=""
+
+# --- Resend (https://resend.com/api-keys) ---
+RESEND_API_KEY="<your Resend API key>"
+# Must be on a domain verified in Resend.
+RESEND_FROM_EMAIL="events@yourdomain.com"
