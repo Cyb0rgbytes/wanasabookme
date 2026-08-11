@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Write-Output \"=== RECURSIVE COUNT ===\"; \\(Get-ChildItem -Force -Recurse \"m:\\\\AI_Projects\\\\WanasaBookMe\" -ErrorAction SilentlyContinue | Measure-Object\\).Count; Write-Output \"\"; Write-Output \"=== PARENT DIR ===\"; Get-ChildItem -Force \"m:\\\\AI_Projects\" -ErrorAction SilentlyContinue | Select-Object Mode,LastWriteTime,Name | Format-Table -AutoSize; Write-Output \"=== RECYCLE BIN CHECK \\(M:\\) ===\"; Test-Path \"M:\\\\`$Recycle.Bin\")",
+      "PowerShell(Write-Output \"=== REMAINING ITEMS ===\"; Get-ChildItem -Force -Recurse \"m:\\\\AI_Projects\\\\WanasaBookMe\" -ErrorAction SilentlyContinue | Select-Object Mode,Length,Name,FullName | Format-Table -AutoSize; Write-Output \"=== TOOLING VERSIONS ===\"; Write-Output \"node: $\\(node --version 2>$null\\)\"; Write-Output \"npm:  $\\(npm --version 2>$null\\)\"; Write-Output \"git:  $\\(git --version 2>$null\\)\")",
+      "PowerShell(npm view @opennextjs/cloudflare versions --json 2>$null)",
+      "PowerShell(npm view @opennextjs/cloudflare version 2>$null)",
+      "PowerShell(npm view @opennextjs/cloudflare peerDependencies --json 2>$null)",
+      "PowerShell(npm view wrangler version 2>$null)"
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "wanasabookme",
+  "main": ".open-next/worker.js",
+
+  // Must be >= 2024-09-23 for @opennextjs/cloudflare. Set to today's date on creation.
+  "compatibility_date": "2026-08-11",
+  // nodejs_compat is REQUIRED by the OpenNext adapter — Next.js pulls in Node built-ins.
+  "compatibility_flags": ["nodejs_compat"],
+
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+
+  // --- Bindings ---
+  // IDs are filled in by the provisioning commands in README.md.
+  // Never put secrets here; use `wrangler secret put`.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "wanasa-db",
+      "database_id": "78dad2be-de4b-4d9e-94fd-824d9940a168",
+      "migrations_dir": "drizzle/migrations"
+    }
+  ],
+
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "wanasa-media"
+    }
+  ],
+
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      "id": "d2c53781517a4950b0b6ffe6fedc766a"
+    }
+  ],
+
+  "vars": {
+    "NEXT_PUBLIC_APP_URL": "http://localhost:3000"
+  }
+}
