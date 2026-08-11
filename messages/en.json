@@ -10,7 +10,8 @@
     "createEvent": "Create event",
     "signIn": "Sign in",
     "signUp": "Sign up",
-    "switchLanguage": "Switch language"
+    "switchLanguage": "Switch language",
+    "account": "Account"
   },
   "Home": {
     "heroTitle": "Bring people together, split the cost fairly",

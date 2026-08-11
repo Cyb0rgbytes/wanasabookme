@@ -44,6 +44,12 @@ Users host and join events with **cost-split pricing** that scales with attendan
 - Use bindings (`env.DB`, `env.MEDIA`), never the Cloudflare REST API from inside a Worker.
 - **Never hand-write the `Env` interface.** Run `npm run cf-typegen` after every `wrangler.jsonc` change.
 - Secrets go through `wrangler secret put` — never into `wrangler.jsonc` or source.
+- **Local secrets live in TWO gitignored files with identical contents:**
+  `.dev.vars` (Workers runtime) and `.env.local` (Next.js `process.env`).
+  Libraries reading `process.env` — `@clerk/backend` among them — cannot see
+  `.dev.vars`. Setting only `.dev.vars` puts Clerk in "keyless mode" and webhook
+  verification fails with "Missing webhook signing secret", while the dev server
+  still prints "Using secrets defined in .dev.vars". Keep both in sync.
 
 ### D1
 - Every column used in a `WHERE`, `ORDER BY`, or `JOIN` needs an index. Unindexed scans burn the free tier's daily row-read budget fast.

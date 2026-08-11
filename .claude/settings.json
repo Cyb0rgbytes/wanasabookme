@@ -22,7 +22,15 @@
       "Bash(git mv *)",
       "Bash(mv src/proxy.ts src/middleware.ts)",
       "Bash(npx wrangler *)",
-      "PowerShell(Set-Location \"m:\\\\AI_Projects\\\\WanasaBookMe\"; Write-Output \"=== LINT ===\"; npm run lint 2>&1 | Select-Object -Last 10; Write-Output \"=== exit: $LASTEXITCODE ===\")"
+      "PowerShell(Set-Location \"m:\\\\AI_Projects\\\\WanasaBookMe\"; Write-Output \"=== LINT ===\"; npm run lint 2>&1 | Select-Object -Last 10; Write-Output \"=== exit: $LASTEXITCODE ===\")",
+      "Bash(git commit *)",
+      "Bash(curl -s -o /dev/null -w \"POST /api/webhooks/clerk \\(no signature\\) -> %{http_code}\\\\n\" -X POST -H \"Content-Type: application/json\" -d '{\"type\":\"user.created\",\"data\":{\"id\":\"user_fake\"}}' --max-time 20 http://localhost:3400/api/webhooks/clerk)",
+      "Bash(curl -s -o /dev/null -w \"  %{http_code} -> %{redirect_url}\\\\n\" -X POST -H \"Content-Type: application/json\" -d '{}' --max-time 20 http://localhost:3400/api/webhooks/clerk)",
+      "Bash(curl -s -o /dev/null -w \"  GET -> %{http_code} -> %{redirect_url}\\\\n\" --max-time 20 http://localhost:3400/api/webhooks/clerk)",
+      "Bash(node \"C:/Users/Omar/AppData/Local/Temp/claude/m--AI-Projects-WanasaBookMe/8a96f033-6eac-4cd4-b045-047b03f27781/scratchpad/svix-probe.mjs\" http://localhost:3400/api/webhooks/clerk user.created user_probe_001)",
+      "Bash(node -e ' *)",
+      "Bash(curl -s --max-time 30 http://localhost:3400/api/_envprobe)",
+      "Bash(curl -s -o /dev/null -w \"GET /api/_envprobe -> %{http_code}, type=%{content_type}\\\\n\" --max-time 25 http://localhost:3400/api/_envprobe)"
     ]
   }
 }

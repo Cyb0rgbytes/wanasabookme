@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { LanguageSwitcher } from "./language-switcher";
+import { AuthControls } from "./auth-controls";
 
 /**
  * Site header.
@@ -27,6 +28,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         {/* ms-auto pushes to the inline-end: right in LTR, left in RTL. */}
         <div className="ms-auto flex items-center gap-3">
           <LanguageSwitcher locale={locale} />
+          <AuthControls />
         </div>
       </nav>
     </header>

@@ -10,7 +10,8 @@
     "createEvent": "إنشاء فعالية",
     "signIn": "تسجيل الدخول",
     "signUp": "إنشاء حساب",
-    "switchLanguage": "تغيير اللغة"
+    "switchLanguage": "تغيير اللغة",
+    "account": "الحساب"
   },
   "Home": {
     "heroTitle": "اجمع الناس، ووزّع التكلفة بإنصاف",
