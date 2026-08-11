@@ -3,24 +3,56 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --accent: #0f766e;
+  --accent-foreground: #ffffff;
+  --surface: #f9fafb;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --muted: #9ca3af;
+    --border: #262626;
+    --accent: #2dd4bf;
+    --accent-foreground: #042f2e;
+    --surface: #141414;
   }
 }
 
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-surface: var(--surface);
+  --font-sans: var(--font-latin), system-ui, sans-serif;
+  --font-arabic: var(--font-arabic), system-ui, sans-serif;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-latin), system-ui, sans-serif;
+}
+
+/*
+ * Arabic gets its own typeface and slightly looser line-height.
+ * Arabic script has taller ascenders/descenders than Latin, so the same
+ * leading that looks right in English reads cramped in Arabic.
+ */
+[dir="rtl"] body {
+  font-family: var(--font-arabic), system-ui, sans-serif;
+  line-height: 1.8;
+}
+
+/*
+ * Mirror icons that encode direction (arrows, chevrons, carets).
+ * Opt in per element with `data-flip-rtl`; never blanket-flip all SVGs,
+ * which would also mirror logos and pictograms.
+ */
+[dir="rtl"] [data-flip-rtl] {
+  transform: scaleX(-1);
 }

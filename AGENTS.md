@@ -30,6 +30,11 @@ Users host and join events with **cost-split pricing** that scales with attendan
 - **Always** use logical equivalents: `ms-*`, `me-*`, `ps-*`, `pe-*`, `start-*`, `end-*`, `text-start`, `text-end`, `border-s-*`, `border-e-*`.
 - ESLint enforces this. Do not disable the rule.
 - Arabic copy must be written as real Arabic, never machine-translated filler.
+- **Numerals stay Latin (1 2 3) in Arabic**, via plain `Intl.NumberFormat(locale)`.
+  CLDR resolves `ar`/`ar-AE` to the `latn` numbering system because that is what
+  UAE commerce actually uses for prices, dates, and phone numbers. Verified in
+  Chrome: `new Intl.NumberFormat('ar-AE').resolvedOptions().numberingSystem === 'latn'`.
+  Do not force `ar-u-nu-arab` — it is a product decision, already taken.
 
 ### Cloudflare Workers
 - `ctx.waitUntil()` for post-response work (e.g. sending email). **Never destructure `ctx`** — it loses `this` binding and throws at runtime.
@@ -73,3 +78,13 @@ npm run lint        # eslint (includes the RTL guard)
 ```
 
 `npm run dev` and `npm run preview` are different runtimes. **A feature is not verified until it passes `preview`.**
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

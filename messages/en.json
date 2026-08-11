@@ -1,0 +1,36 @@
+{
+  "Metadata": {
+    "siteName": "WanasaBookMe",
+    "title": "WanasaBookMe — Host and join events",
+    "description": "Create events, split the cost fairly, and bring people together across the UAE and the Gulf."
+  },
+  "Nav": {
+    "home": "Home",
+    "events": "Events",
+    "createEvent": "Create event",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "switchLanguage": "Switch language"
+  },
+  "Home": {
+    "heroTitle": "Bring people together, split the cost fairly",
+    "heroSubtitle": "Host an event, set a total budget, and watch the price per person drop as more friends join.",
+    "browseEvents": "Browse events",
+    "hostEvent": "Host an event",
+    "howItWorksTitle": "How it works",
+    "step1Title": "Set your total cost",
+    "step1Body": "Book the venue, name your budget. You decide the total, not the ticket price.",
+    "step2Title": "Share the link",
+    "step2Body": "Send it to your group on WhatsApp. Everyone sees the live price per person.",
+    "step3Title": "Price drops as people join",
+    "step3Body": "The more people who join, the less everyone pays. Nobody pays more than they agreed to."
+  },
+  "Common": {
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "notFound": "Page not found",
+    "notFoundBody": "The page you're looking for doesn't exist or has moved.",
+    "backHome": "Back to home"
+  }
+}
