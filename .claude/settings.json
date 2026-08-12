@@ -43,7 +43,11 @@
       "Bash(curl -s -X POST --max-time 40 http://localhost:3800/api/test/probe-count)",
       "Bash(rm -f src/app/api/test/probe-count/route.ts)",
       "Bash(rmdir src/app/api/test/probe-count)",
-      "Bash(node scripts/test-event-queries.mjs)"
+      "Bash(node scripts/test-event-queries.mjs)",
+      "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch -f --tree-filter ' *)",
+      "Bash(git diff-files *)",
+      "Bash(git diff-index *)",
+      "Bash(git commit -q -m 'Record tool permissions in .claude/settings.json *)"
     ]
   }
 }
