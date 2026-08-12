@@ -25,6 +25,13 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
           {t("events")}
         </Link>
 
+        <Link
+          href="/events/new"
+          className="hover:text-accent hidden text-sm font-medium sm:inline"
+        >
+          {t("createEvent")}
+        </Link>
+
         {/* ms-auto pushes to the inline-end: right in LTR, left in RTL. */}
         <div className="ms-auto flex items-center gap-3">
           <LanguageSwitcher locale={locale} />
