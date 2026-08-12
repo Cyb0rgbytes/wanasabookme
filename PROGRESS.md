@@ -1,7 +1,7 @@
 # WanasaBookMe — Progress & Handoff
 
 **Last updated:** 2026-08-12
-**Branch:** `main` (local only — **no git remote configured, nothing pushed**)
+**Repo:** https://github.com/Cyb0rgbytes/wanasabookme (`main`, pushed)
 **Live:** https://wanasabookme.omar1super.workers.dev
 
 ---
@@ -13,11 +13,10 @@ with **cost-split pricing** — a total cost divided among attendees, so the
 per-person price *falls* as more people join.
 
 This repo is **Slice 1** of a much larger brief. The full idea (payments,
-subscriptions, albums, social graph, Hijri/prayer times, UAE Pass, WhatsApp
-Business API, corporate/MICE, PDPL compliance) is ~8 independent subsystems and
-12+ months of work. It was deliberately decomposed; Slice 1 is the walking
-skeleton that de-risks the two hardest-to-retrofit properties: **true RTL layout**
-and **server-rendered SEO**.
+subscriptions, albums, social graph, prayer times, UAE Pass, WhatsApp Business
+API, corporate/MICE) is ~8 independent subsystems and 12+ months of work. It was
+deliberately decomposed; Slice 1 is the walking skeleton that de-risks the two
+hardest-to-retrofit properties: **true RTL layout** and **server-rendered SEO**.
 
 Full design doc: `C:\Users\Omar\.claude\plans\i-ll-use-the-following-velvety-curry.md`
 
@@ -36,7 +35,7 @@ Full design doc: `C:\Users\Omar\.claude\plans\i-ll-use-the-following-velvety-cur
 | Tests | Vitest | 4.1.10 |
 | Email | Resend | *not yet wired* |
 
-**Cloudflare resources** (bindings in `wrangler.jsonc`):
+**Cloudflare bindings** (`wrangler.jsonc`):
 
 | Binding | Resource | Name / ID |
 |---|---|---|
@@ -48,77 +47,117 @@ Full design doc: `C:\Users\Omar\.claude\plans\i-ll-use-the-following-velvety-cur
 
 ## Progress
 
-| Phase | Status | Commit |
-|---|---|---|
-| 0 — Clear Expo artifacts | ✅ Done | — |
-| 1 — Scaffold + deploy | ✅ Done | `6a65520` |
-| 2 — i18n + RTL shell | ✅ Done, browser-verified | `c6f9d2a` |
-| 3 — Clerk auth + webhook sync | ✅ Done, verified both runtimes | `aab28ba` |
-| 4 — Schema + pricing engine | ✅ Done, 50 tests | `9cfe332` |
-| 5a — Atomic join + race proof | ✅ Done, stress-verified | `0b32d88` |
-| **5b — Event UI** | 🔶 **Written, NOT verified** | **uncommitted** |
-| 6 — SEO | ⬜ Not started | — |
-| 7 — Consent + legal | ⬜ Not started | — |
+| Phase | Status |
+|---|---|
+| 0 — Clear Expo artifacts | ✅ Done |
+| 1 — Scaffold + deploy | ✅ Done |
+| 2 — i18n + RTL shell | ✅ Done, browser-verified |
+| 3 — Clerk auth + webhook sync | ✅ Done, verified both runtimes |
+| 4 — Schema + pricing engine | ✅ Done, 50 tests |
+| 5 — Events: join logic + full UI | ✅ Done, race-proven, browser-verified |
+| **6 — SEO** | ⬜ **Next** |
+| 7 — Consent + legal | ⬜ Not started |
+
+**Working tree is clean. Everything is committed and pushed.**
+
+### What works end-to-end today
+
+Create an event (bilingual, cost-split config, audience setting) → browse with
+search and filters → open the detail page → join. In both locales, verified in
+`next dev` *and* workerd.
 
 ---
 
-## ⚠️ Uncommitted work — where we stopped
+## Next up: Phase 6 (SEO)
 
-Phase 5b UI is written but **stopped mid-verification**. Typecheck passed; lint
-had not finished running when work paused. Nothing has been browser-tested.
+The phase the brief specifically called out — it is what makes events spread.
 
-```
- M messages/ar.json                     # ~60 new keys, ICU plurals
- M messages/en.json
- M src/components/site-header.tsx       # added "Create event" nav link
-?? src/app/[locale]/events/             # browse, detail, create, actions
-?? src/components/audience-badge.tsx
-?? src/components/event-card.tsx
-?? src/components/price-display.tsx
-?? src/lib/event-queries.ts
-?? src/lib/format.ts
-```
+- `generateMetadata` per event with localized title/description
+- **Open Graph tags** so WhatsApp renders a rich preview card
+- `hreflang` alternates linking the en/ar pair
+- Dynamic OG images via `next/og`
+- `Event` JSON-LD structured data
+- `sitemap.ts` + `robots.ts`
 
-### Resume here
+**Gate:** pasting an event URL into WhatsApp shows a preview card.
+
+Then Phase 7: cookie consent (no non-essential scripts before consent) and
+Privacy Policy + T&Cs in AR/EN referencing **UAE PDPL** — generated as **drafts
+requiring review by a UAE-qualified lawyer**, not as finished legal text.
+
+---
+
+## ⚠️ Outstanding — needs you
+
+### 1. Remote D1 has NO TABLES (blocks deploy)
+
+`wrangler d1 migrations apply --remote` failed with `code: 7403` — the OAuth
+token can *create* D1 databases but cannot *query* them remotely.
 
 ```bash
-cd m:/AI_Projects/WanasaBookMe
-npm run lint          # ← FIRST: was interrupted; expect RTL-guard findings
-npm run typecheck     # was passing
-npm test              # 47 passing
-npm run dev           # then browser-test the flow
+npx wrangler login          # refresh token scopes
+npm run db:migrate:remote
 ```
 
-Then work the Phase 5 gate: **create → browse → join, in both locales**, verified
-in `next dev` *and* `npm run preview` (workerd). Commit only after that passes.
+Local D1 is fully migrated (`users`, `events`, `event_attendees`).
+
+### 2. Overly broad permissions in `.claude/settings.json`
+
+A background security review flagged three **semantic escape** entries — patterns
+ending `' *` that pre-approve arbitrary commands:
+
+- `Bash(node -e ' *)` — any Node code
+- `Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch -f --tree-filter ' *)`
+- `Bash(git commit -q -m 'Record tool permissions in .claude/settings.json *)`
+
+Auto-recorded by Claude Code during this session. Consider deleting those lines
+so the commands prompt again. No secrets involved.
+
+### 3. Real signup never tested
+
+The Clerk webhook was verified with correctly-signed synthetic events — same code
+path — but nobody has clicked through Clerk's UI with a real email. Local
+webhooks also need a tunnel (ngrok) to reach the dev machine; otherwise test
+after deploying.
+
+### 4. Production Clerk webhook not registered
+
+Clerk Dashboard → Webhooks → Add Endpoint:
+`https://wanasabookme.omar1super.workers.dev/api/webhooks/clerk`
+Subscribe to `user.created`, `user.updated`, `user.deleted`. Production needs its
+own signing secret via `wrangler secret put CLERK_WEBHOOK_SIGNING_SECRET`.
+
+### 5. Rotate keys before production
+
+Clerk and Resend keys passed through an AI session. They are `pk_test`/`sk_test`
+so risk is low, but rotate both before going live.
+
+### 6. Arabic needs a native review
+
+Written as real Arabic, not machine-translated — but unreviewed by a native
+speaker. The brief flagged local credibility as table stakes.
 
 ---
 
 ## Verified facts worth not re-learning
 
-These each cost real debugging time. They are also recorded in `AGENTS.md`.
+Each of these cost real debugging time. Also recorded in `AGENTS.md`.
 
 ### 1. Do NOT rename `middleware.ts` → `proxy.ts`
 
-Next 16 deprecates `middleware` and prints a build warning recommending the
-codemod. **Ignore it.** `proxy` runs only on the Node.js runtime, which is not
-configurable, and Workers cannot execute it:
-
-```
-ERROR Node.js middleware is not currently supported.
-```
-
-The rename was attempted and reverted. Per the Next 16 upgrade guide: *"If you
-want to continue using the edge runtime, keep using middleware."*
+Next 16 deprecates `middleware` and recommends a codemod. **Ignore it.** `proxy`
+runs only on the Node.js runtime, which is not configurable, and Workers cannot
+execute it: `opennextjs-cloudflare build` fails with *"Node.js middleware is not
+currently supported."* The rename was attempted and reverted.
 
 ### 2. Local secrets need TWO files
 
-| File | Read by | Consumer |
-|---|---|---|
-| `.dev.vars` | Workers runtime | `wrangler dev`, `npm run preview` |
-| `.env.local` | Next.js → `process.env` | `npm run dev`, `@clerk/backend` |
+| File | Read by |
+|---|---|
+| `.dev.vars` | Workers runtime (`wrangler dev`, `npm run preview`) |
+| `.env.local` | Next.js → `process.env` (`npm run dev`, `@clerk/backend`) |
 
-Both gitignored, contents identical. With only `.dev.vars`, Clerk silently enters
+Both gitignored, identical contents. With only `.dev.vars`, Clerk silently enters
 **keyless mode** and webhook verification fails with *"Missing webhook signing
 secret"* — while the dev server still prints *"Using secrets defined in
 .dev.vars"*. Production reads neither; use `wrangler secret put`.
@@ -128,13 +167,12 @@ secret"* — while the dev server still prints *"Using secrets defined in
 next-intl prefixes every path it handles. `POST /api/webhooks/clerk` was
 answering `307 → /en/api/webhooks/clerk`. Clerk follows redirects, so **delivery
 would have looked successful in the dashboard while no row was ever written.**
-Guarded with an explicit `isApiRoute()` check in `src/middleware.ts`.
+Guarded by an explicit `isApiRoute()` check in `src/middleware.ts`.
 
 ### 4. D1 has no interactive transactions
 
 Each statement is a separate Durable Object round-trip, so `BEGIN`…`COMMIT`
-spanning a read and a write does not exist. The plan's "wrap the join in a
-transaction" is **not implementable**. The capacity guard is one atomic
+across a read and a write does not exist. The capacity guard is one atomic
 statement instead:
 
 ```sql
@@ -142,24 +180,52 @@ INSERT INTO event_attendees (...)
 SELECT ... WHERE (SELECT COUNT(*) ...) < capacity
 ```
 
-The loser writes zero rows; `meta.changes === 0` reports it. Arguably safer than
-a transaction — there is no window to get wrong.
+The loser writes zero rows; `meta.changes === 0` reports it. Safer than a
+transaction — there is no window to get wrong.
 
-### 5. Arabic renders Latin digits (1 2 3), not ١ ٢ ٣
+### 5. Never interpolate Drizzle table objects into a correlated subquery
+
+`${eventAttendees}` inside a `sql` template does not reliably emit a correlatable
+alias — Drizzle can alias the outer table, so the correlation matches nothing and
+the count is **silently 0**. This shipped briefly and rendered perfectly: zero is
+a valid count, and prices simply sat at the ceiling, which is exactly how an
+empty event looks. Use raw column names.
+`scripts/test-event-queries.mjs` now asserts rendered counts against seed data.
+
+### 6. `Date.now()` in a Server Component is impure
+
+React's purity rule flags it: the value gets baked into prerendered/cached
+output, so an event could stay marked "already started" after caching. Use
+`src/lib/now.ts` (`server-only`, so a Client Component importing it is a build
+error — client clocks are the user's and may be skewed).
+
+### 7. Arabic renders Latin digits (1 2 3), not ١ ٢ ٣
 
 CLDR resolves `ar`/`ar-AE` to the `latn` numbering system, matching UAE
-commercial usage for prices and dates. Verified:
-`new Intl.NumberFormat('ar-AE').resolvedOptions().numberingSystem === 'latn'`.
-**This is a product decision, already taken — not a bug.**
+commercial usage. **A product decision already taken — not a bug.**
 
-### 6. Clerk 7 renamed the auth components
+### 8. Arabic has six plural forms
+
+`one / two / few / many / other / =0`. ICU MessageFormat handles it only if every
+branch is written. Verified in-browser: 1 seat → "بقي مقعد واحد" (singular),
+12 → "بقي 12 مقعدًا" (many).
+
+### 9. Clerk 7 renamed the auth components
 
 `<SignedIn>` / `<SignedOut>` are gone. Use `<Show when="signed-in">`.
 
-### 7. OpenNext peer range has a gap
+### 10. OpenNext peer range has a gap
 
 `>=15.5.21 <16 || >=16.2.11` — Next 16.0–16.2.10 is **excluded**. Re-check on any
-Next upgrade rather than assuming forward compatibility.
+Next upgrade.
+
+### 11. Secret scanners match key PREFIXES, not values
+
+GitHub blocked the first push over `sk_test_xxxxxxxxxxxx` in
+`.dev.vars.example` — literal `x` characters, no real key. History was rewritten
+to use `<your Clerk secret key>` style placeholders rather than clicking
+"allow this secret", which would have put a `sk_test_`-shaped string in a public
+repo permanently. Safety tag `backup-before-rewrite` holds the original history.
 
 ---
 
@@ -175,20 +241,15 @@ you pay     = min(priceWhenYouJoined, settled)
 ```
 
 The join-time price is a **personal cap**, not a fixed amount — nobody pays more
-than they agreed to, and everyone benefits when later joins lower the price. This
-reconciles the four guards chosen during design, which conflicted as literally
-stated.
-
-Decisions the tests pin down:
+than they agreed to, and everyone benefits when later joins lower the price.
 
 - **All money is integer fils** (1 AED = 100 fils). Never floats.
 - Division **rounds up** — rounding down on 1000/3 collects 999 and leaves the
   organizer a fil short on every odd split.
-- Zero attendees yields the **ceiling**, not a divide-by-zero (an empty event page
-  shows the worst case a visitor could pay).
+- Zero attendees yields the **ceiling**, not a divide-by-zero.
 - Quotes use the **post-join** price (`attendees + 1`) so the number doesn't drop
-  the instant someone clicks — that reads as bait-and-switch even when it favours
-  them.
+  the instant someone clicks — that reads as bait-and-switch even when it
+  favours them.
 - Price is **monotonic**: never rises as attendance grows (asserted).
 
 ---
@@ -201,14 +262,8 @@ Verified against a real D1 instance (mocks cannot exhibit a race):
 |---|---|
 | 12 racers → 3 seats | 3 winners, 9 `sold_out`, 3 DB rows |
 | 20 racers → 1 seat (×3 runs) | exactly 1 winner each time |
-| 20 → 2 seats | 2 winners |
-| 30 → 5 seats | 5 winners |
-| 25 → 7 seats | 7 winners |
-| Winner re-joins | `already_joined`, count unchanged |
-| Loser retries | `sold_out`, no stray seat |
-
-Single-seat ran three times deliberately — a race that passes once may only have
-been lucky.
+| 20 → 2, 30 → 5, 25 → 7 | exact every time |
+| Winner re-joins / loser retries | `already_joined` / `sold_out`, count stable |
 
 ```bash
 npx wrangler dev --port 3600        # terminal 1
@@ -231,24 +286,21 @@ the route exists. Verified 404 in the built Worker.
 - **Always** `ms-*`, `me-*`, `ps-*`, `pe-*`, `start-*`, `end-*`, `text-start`,
   `text-end`, `border-s-*`, `border-e-*`.
 - Enforced by a **custom ESLint rule**
-  (`eslint-rules/no-physical-direction-classes.mjs`). Do not disable it. It was
-  tested against a probe file: caught 6/6 violations including inside template
-  literals and behind `sm:` variants, with zero false positives.
-- Arabic copy is written as real Arabic, never machine-translated filler.
+  (`eslint-rules/no-physical-direction-classes.mjs`). Do not disable it. It found
+  **zero violations across ~800 lines of new JSX** in Phase 5 — the discipline
+  holds.
+- Arabic copy is real Arabic, never machine-translated filler.
 - Arabic gets `line-height: 1.8` — Arabic ascenders/descenders read cramped at
   Latin leading.
 - Icon mirroring is **opt-in** via `[dir="rtl"] [data-flip-rtl]`, never a blanket
   SVG flip (which would mirror logos too).
-- **Arabic has six plural forms** (`one/two/few/many/other/=0`). ICU
-  MessageFormat handles it only if every branch is written; `messages/ar.json`
-  does this for `spotsLeft` and `needsMore`.
 
 ### Cloudflare Workers
 
 - `ctx.waitUntil()` for post-response work. **Never destructure `ctx`** — it
   loses `this` binding and throws at runtime.
 - No floating promises; no module-level mutable request state (isolates are
-  reused across requests → cross-request leaks).
+  reused → cross-request leaks).
 - `crypto.randomUUID()`, never `Math.random()`, for anything security-relevant.
 - Bindings, never the Cloudflare REST API from inside a Worker.
 - **Never hand-write the `Env` interface** — `npm run cf-typegen` after every
@@ -263,7 +315,7 @@ the route exists. Verified 404 in the built Worker.
 ### `npm run dev` ≠ `npm run preview`
 
 Different runtimes. **A feature is not verified until it passes `preview`.** This
-already caught one bug that `dev` could not (`proxy.ts`).
+already caught a bug `dev` could not (`proxy.ts`).
 
 ---
 
@@ -275,7 +327,7 @@ npm run preview        # build + run in workerd — matches production
 npm run deploy         # build + deploy to Cloudflare
 npm run typecheck      # tsc --noEmit
 npm run lint           # eslint incl. RTL guard
-npm test               # unit tests (~0.5s)
+npm test               # unit tests (~1s, 47 tests)
 npm run test:types     # + type assertions (~16s)
 npm run db:generate    # new migration from schema
 npm run db:migrate:local
@@ -283,70 +335,19 @@ npm run db:migrate:remote
 npm run cf-typegen     # regenerate cloudflare-env.d.ts
 ```
 
-Wrangler is a **local** dependency — always `npx wrangler`, never a global install.
-
----
-
-## ⚠️ Outstanding — needs the human
-
-### 1. Remote D1 has NO TABLES (blocking for deploy)
-
-`wrangler d1 migrations apply --remote` failed with `code: 7403 — The given
-account is not valid or is not authorized to access this service`. The OAuth
-token can *create* D1 databases but cannot *query* them remotely.
+Integration tests (need a dev server on the matching port):
 
 ```bash
-npx wrangler login          # refresh token scopes
-npm run db:migrate:remote   # then this
+node scripts/test-join-race.mjs       # capacity race, port 3600
+node scripts/test-event-queries.mjs   # counts + prices, port 3800
 ```
 
-Local D1 is fully migrated (`users`, `events`, `event_attendees`).
-
-### 2. Real signup never tested
-
-The Clerk webhook was verified with correctly-signed synthetic events — same code
-path — but no one has clicked through Clerk's UI with a real email. Local
-webhooks also need a tunnel (ngrok) to reach the dev machine; absent that, test
-after deploying.
-
-### 3. Production Clerk webhook endpoint not registered
-
-Clerk Dashboard → Webhooks → Add Endpoint:
-`https://wanasabookme.omar1super.workers.dev/api/webhooks/clerk`
-Subscribe to `user.created`, `user.updated`, `user.deleted`. Production gets its
-own signing secret via `wrangler secret put CLERK_WEBHOOK_SIGNING_SECRET`.
-
-### 4. Rotate keys before production
-
-Clerk and Resend keys passed through an AI session. They are `pk_test`/`sk_test`
-so risk is low, but rotate both before going live.
-
-### 5. No git remote
-
-Nothing is pushed anywhere. Creating a GitHub repo (and Workers Builds CI/CD) is
-outward-facing and was deliberately left for explicit approval.
-
-### 6. Arabic needs a native review
-
-The Arabic copy was written as real Arabic, not machine-translated — but it has
-not been reviewed by a native speaker. Worth doing before launch; the brief
-flagged local credibility as table stakes.
+Wrangler is a **local** dependency — always `npx wrangler`, never a global
+install.
 
 ---
 
-## Next steps
-
-1. **Finish Phase 5b** — run lint, fix findings, browser-test create → browse →
-   join in both locales, verify in `preview`, commit.
-2. **Phase 6 (SEO)** — `generateMetadata` per event, OG images via `next/og`,
-   `hreflang` alternates, `Event` JSON-LD, `sitemap.ts`, `robots.ts`.
-   Gate: pasting an event URL into WhatsApp renders a rich preview card.
-3. **Phase 7 (Legal)** — cookie consent (no non-essential scripts before
-   consent), Privacy Policy + T&Cs in AR/EN referencing **UAE PDPL**.
-   ⚠️ Generate as **drafts requiring review by a UAE-qualified lawyer** — not as
-   finished legal text.
-
-### After Slice 1
+## After Slice 1
 
 Slice 2 (payments — Stripe authorize-now/capture-at-cutoff, subscriptions
 $19/$29 monthly, regional rails like Telr/PayTabs, Apple Pay), then albums, then
