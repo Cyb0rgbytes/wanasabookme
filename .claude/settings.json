@@ -47,7 +47,8 @@
       "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch -f --tree-filter ' *)",
       "Bash(git diff-files *)",
       "Bash(git diff-index *)",
-      "Bash(git commit -q -m 'Record tool permissions in .claude/settings.json *)"
+      "Bash(git commit -q -m 'Record tool permissions in .claude/settings.json *)",
+      "Bash(npm audit *)"
     ]
   }
 }

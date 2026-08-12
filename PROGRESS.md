@@ -137,6 +137,22 @@ so risk is low, but rotate both before going live.
 Written as real Arabic, not machine-translated — but unreviewed by a native
 speaker. The brief flagged local credibility as table stakes.
 
+### 7. Dependabot alert — assessed, do NOT "fix"
+
+GitHub reports 1 moderate vulnerability: `esbuild <=0.24.2`
+(GHSA-67mh-4wv8-2f99), reached via `drizzle-kit → @esbuild-kit/esm-loader →
+esbuild`.
+
+**Not exploitable here.** The advisory concerns esbuild's *dev server* accepting
+cross-origin requests. `drizzle-kit` only invokes esbuild to transpile
+`drizzle.config.ts` when generating migrations — no server is ever started, and
+it is a devDependency that never ships.
+
+**Do not run `npm audit fix --force`.** It downgrades `drizzle-kit` 0.31.10 →
+0.18.1, thirteen minor versions back, which breaks D1 support entirely.
+`@esbuild-kit/*` is deprecated and merged into `tsx`; the correct fix is an
+upstream `drizzle-kit` release. Re-check periodically.
+
 ---
 
 ## Verified facts worth not re-learning
